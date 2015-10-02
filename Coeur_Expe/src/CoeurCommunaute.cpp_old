@@ -1,0 +1,296 @@
+//============================================================================
+// Name        : CoeurCommunaute.cpp
+// Author      : Tennessy Kolubako
+// Version     :
+// Copyright   : Your copyright notice
+//============================================================================
+
+#include <iostream>
+#include <string>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <vector>
+#include <fstream>
+#include <dirent.h>
+#include <algorithm>
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sstream>
+#include "Digraph.hpp"
+#include "EdgeWeight.hpp"
+
+using namespace std;
+
+/*
+ * Graph type nbExecution Seuil
+ */
+int main(int argc, char* argv[]) {
+
+	if(argc>4){
+
+		double seuil = atof(argv[4]);
+		string graphPath = argv[1];
+		string pathProg = argv[0];
+		string path = pathProg.substr(0, pathProg.find_last_of("/"));
+		if(path.at(path.length()-1) == '/')
+			path = path.substr(2, path.length()-10);
+		else
+			path = path.substr(2, path.length()-9);
+
+		string graphName = graphPath.substr(graphPath.find_last_of("/")+1, graphPath.length());
+		if(graphName.length() == 0){
+			graphName = graphPath;
+		}
+
+		system((path + "/dependencies/TriangleCC/Release/TriangleCC " + graphPath + " " + path + "/relabInit " + argv[2] + " > " + path + "CoocurrenceTriangle_" + graphName).c_str());
+		cout << "TriangleCC done " << endl;
+
+		cout << "PATH : " << path << endl;
+		Digraph *graphDep = new Digraph();
+		graphDep->loadEdgeList(path + "CoocurrenceTriangle_" + graphName, true);
+		if(graphDep->getEdgeList().empty()){
+			cout << "Empty" << endl;
+			delete graphDep;
+			return 0;
+		}
+
+		//		graphDep->relabel();
+
+		// On est obligé de renuméroter les co-occurrences (tout le monde n'y est pas forcément)
+		// Correspondance
+		ofstream relabelFile1(path + "relabel1", ios::out);
+		vector<long int> relab1 = graphDep->relabel();
+		for(unsigned long int i=0; i<relab1.size(); i++){
+			if(relab1[i] != -1){
+				relabelFile1 << i << " " << relab1[i] << endl;
+			}
+		}
+		relabelFile1.close();
+
+		// Relabel du graphe
+		ofstream relabelGraphT(path+ graphName + "_relab");
+		for(int i=0; i<graphDep->getEdgeList().size(); i++){
+			relabelGraphT << graphDep->getEdgeList()[i].getSource() << " " << graphDep->getEdgeList()[i].getTarget() << " " << graphDep->getEdgeList()[i].getWeight() << endl;
+		}
+		relabelGraphT.close();
+		delete graphDep;
+
+
+		vector<Edge> edges = vector<Edge>();
+		cout << "Converting" << endl;
+		system(("./" + path + "dependencies/Community_latest/convert -i " + path+ graphName + "_relab"+" -o " + path + "Louvain/graph.bin -w " + path + "Louvain/graph.weight").c_str());
+		for(int k = 0; k<atoi(argv[3]); k++){
+			stringstream fileName;
+			fileName << "Louvain/graph" << k;
+			vector< vector<unsigned long int> > comm = vector< vector<unsigned long int> >();
+
+			//			cout << "community" << endl;
+			system(("./" + path + "dependencies/Community_latest/community -l -1 "+path+"Louvain/graph.bin -w "+ path +"Louvain/graph.weight >" + path + "Louvain/graph.tree").c_str());
+			//		system("awk 'NR>11' graph.tree > graphCommunities");
+			//			cout << "hierarchy" << endl;
+			system(("./" + path + "dependencies/Community_latest/hierarchy -l 0 " + path + "Louvain/graph.tree > " + path +fileName.str()).c_str());
+
+			// On parcourt le fichier des communautés (dernier niveau de la hiérarchie)
+			FILE* file = fopen((path + fileName.str()).c_str(), "r");
+			long source, target;
+			int scanfReturn;
+
+			// On charge les communautés dans un vecteur
+			cout << "reading graph from : " << (path + fileName.str()).c_str() << endl;
+			while ((scanfReturn = fscanf(file,"%ld %ld", &source, &target)) != EOF) {
+				//						cout << source << " " << target << endl;
+				if(scanfReturn == 2){
+
+					while(target>=comm.size()){
+						comm.push_back(vector<unsigned int long>());
+					}
+					comm[target].push_back(source);
+				}
+
+			}
+			fclose(file);
+
+			// Création du fichier de "compte" des communautés ?
+			ofstream hugeGraph;
+			if(k==0)
+				hugeGraph.open((path + "CooccurenceCommunity_"+graphName).c_str(), ios::out);
+			else
+				hugeGraph.open((path + "CooccurenceCommunity_"+graphName).c_str(), ios::app);
+
+			// Dans le fichier hugeGraph, chaque ligne contient deux sommets qui appartiennent a la meme communauté (avec source < target)
+			for(unsigned long int i=0; i<comm.size(); i++){
+				for(unsigned long int j=0; j<comm[i].size(); j++){
+					for(unsigned long int l=j+1; l<comm[i].size(); l++){
+						hugeGraph << min(comm[i][j], comm[i][l]) << " " << max(comm[i][j], comm[i][l]);
+						// C'est pour éviter un retour de ligne à la fin du fichier ça ?
+						if(i!=comm.size()-1 || j!=comm[i].size()-1)
+							hugeGraph << endl;
+					}
+				}
+			}
+			hugeGraph.close();
+		}
+
+		// En triant ce graphe la, on obtient (presque) directement le graphe de co-occurrence
+		cout << endl << "Sorting edges" << endl;
+		system(("sort -k 1,1n -k 1,2n " + path + "CooccurenceCommunity_"+graphName + " -o" + path + "CooccurenceCommunity_"+graphName).c_str());
+
+		FILE* file = fopen((path + "CooccurenceCommunity_"+graphName).c_str(), "r");
+		long source, target, prevSource, prevTarget, nbOccur=1;
+		int scanfReturn;
+
+		ofstream weightedGraph(path + "WeightedCooccurenceCommunity_" + graphName, ios::out);
+		ofstream unweightedGraph(path + "CooccurenceCommunity_alpha_" + graphName, ios::out);
+
+		fscanf(file,"%ld %ld", &prevSource, &prevTarget);
+		while ((scanfReturn = fscanf(file,"%ld %ld", &source, &target)) != EOF) {
+			if(scanfReturn == 2){
+				if(prevSource != source || prevTarget != target){
+					if((double)(((double)nbOccur)/atoi(argv[3]) >= seuil)){
+						unweightedGraph << prevSource << " " << prevTarget << endl;
+					}
+
+					weightedGraph << prevSource << " " << prevTarget << " " << nbOccur << endl;
+					prevSource = source;
+					prevTarget = target;
+					nbOccur = 1;
+				}
+				else
+					nbOccur++;
+			}
+		}
+
+		if((double)(((double)nbOccur)/atoi(argv[3]) >= seuil)){
+			unweightedGraph << prevSource << " " << prevTarget << endl;
+		}
+		weightedGraph << source << " " << target << " " << nbOccur;
+
+		fclose(file);
+
+		weightedGraph.close();
+		unweightedGraph.close();
+
+		cout << "Writing WeightedEdges/unweightedEdges done" << endl;
+
+
+		Digraph d = Digraph();
+		d.loadEdgeList(path + "CooccurenceCommunity_alpha_" + graphName, false);
+		cout << "graph loaded" << endl;
+
+		ofstream relabelFile2(path + "relabel2", ios::out);
+		vector<long int> relab2 = d.relabel();
+		for(long int i=0; i<relab2.size(); i++){
+			if(relab2[i] != -1){
+				relabelFile2 << i << " " << relab2[i] << endl;
+			}
+		}
+		relabelFile2.close();
+
+		//Writing weightedGraph relabeled
+
+		// Ce serait pas plus simple de reparcourir juste CooccurrenceCommunity ? Vu que tu fais déjà les tests sur le seuil en le créant ?
+		// J'ai peut-être loupé un truc remarque ;)
+		// file = fopen((path + "WeightedCooccurenceCommunity_"+graphName).c_str(), "r");
+
+		ofstream unweightedRelabeledGraph(path + "CooccurenceCommunity_alpha_" + graphName +"_relabeled", ios::out);
+
+		int weight = 1;
+		// while ((scanfReturn = fscanf(file,"%ld %ld %ld", &source, &target, &weight)) != EOF) {
+		// 	if(scanfReturn == 3){
+		// 		if((double)(((double)weight)/atoi(argv[3]) >= seuil)){
+		// 			unweightedRelabeledGraph << relab2[source] << " " << relab2[target] << endl;
+		// 		}
+		// 	}
+		// }
+
+
+		// fclose(file);
+
+		ifstream inFile(path + "WeightedCooccurenceCommunity_"+graphName);
+		while(inFile >> source >> target >> weight){
+			if((double)(((double)weight)/atoi(argv[3]) >= seuil)){
+				unweightedRelabeledGraph << relab2[source] << " " << relab2[target] << endl;
+			}
+		}
+
+		unweightedRelabeledGraph.close();
+
+		//End
+
+
+
+		// Correspondance inverse entre Cooccurrence alpha et Cooccurrence classique
+		vector<long int> labelBase = vector<long int>(relab2.size());
+		for(unsigned long int i=0; i<labelBase.size(); i++){
+			if(relab2[i]>=0){
+				if(labelBase[relab2[i]] >= labelBase.size()){
+					labelBase.reserve(relab2[i]+1);
+				}
+				labelBase[relab2[i]] = i;
+			}
+		}
+
+		d.genDegcum();
+		cout << "Graph created" << endl;
+
+		vector< vector<int> > communities = d.getConnectedNode();
+		vector<long int> renum_louvain = vector<long int>(relab1.size());
+
+		// Correspondance inverse entre cooccurrence et le graphe de depart ?
+		for(int i=0; i<relab1.size(); i++){
+			if(relab1[i] >= 0){
+				if(relab1[i] >= renum_louvain.size())
+					renum_louvain.reserve(relab1[i]+1);
+				renum_louvain[relab1[i]] = i;
+			}
+		}
+
+		//		cout << "renum_louvain : " << endl;
+		//		for(int i=0; i<renum_louvain.size(); i++){
+		//			cout << i << " " << renum_louvain[i] << endl;
+		//		}
+
+		vector<int> relabInit = vector<int>(relab1.size(), 0);
+		file = fopen((path + "relabInit").c_str(), "r");
+
+		while ((scanfReturn = fscanf(file,"%ld %ld", &source, &target)) != EOF) {
+			if(scanfReturn == 2){
+				if(target>relabInit.size()-1)
+					relabInit.reserve(target+1);
+				relabInit[target] = source;
+			}
+		}
+
+		fclose(file);
+
+
+		ofstream comFile(path + "CoocurrenceTriangle_communities_inital_" + graphName, ios::out);
+		ofstream comFileBaseLabel(path + "CoocurrenceTriangle_communities_" + graphName, ios::out);
+		for(unsigned int i=0; i<communities.size(); i++){
+			for(unsigned int j=0; j<communities[i].size(); j++){
+				comFile << relabInit[renum_louvain[labelBase[communities[i].at(j)]]];
+				comFileBaseLabel << renum_louvain[labelBase[communities[i].at(j)]];
+				if(j < communities[i].size()-1){
+					comFile  << ",";
+					comFileBaseLabel << ",";
+				}
+			}
+			comFile << endl;
+			comFileBaseLabel << endl;
+		}
+		comFile.close();
+		comFileBaseLabel.close();
+		cout << "writing communities done" << endl;
+
+		//		ofstream unweightedGraphRelabeled(path + "unWeightedGraphRelabeled", ios::out);
+		//		for(Edge e : d.getEdgeList()){
+		//			unweightedGraphRelabeled << e.getSource() << " " << e.getTarget() << endl;
+		//		}
+		//		unweightedGraphRelabeled.close();
+	}
+	else
+		cout << "Usage : " << endl << "CoeurCommunaute graph typeTriangle nbLouvain alpha" << endl;
+
+	return 0;
+}
