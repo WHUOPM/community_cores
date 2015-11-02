@@ -38,7 +38,8 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: CoeurCommunaute Triangles CoeurCommunaute-Old
+all: CoeurCommunaute CoeurCommunaute-Old 
+#Triangles 
 
 # Tool invocations
 CoeurCommunaute: $(OBJS) $(USER_OBJS)
@@ -55,16 +56,16 @@ CoeurCommunaute-Old: $(OBJS_O) $(USER_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-Triangles: $(OBJS_T) $(USER_OBJS)
-	@echo 'Building target: $@'
-	@echo 'Invoking: Cross G++ Linker'
-	g++  -o "Triangles" $(OBJS_T) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
-	@echo ' '
+#Triangles: $(OBJS_T) $(USER_OBJS)
+#	@echo 'Building target: $@'
+#	@echo 'Invoking: Cross G++ Linker'
+#	g++  -o "Triangles" $(OBJS_T) $(USER_OBJS) $(LIBS)
+#	@echo 'Finished building target: $@'
+#	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(C++_DEPS)$(OBJS)$(OBJS_T)$(OBJS_O)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) CoeurCommunaute-Old Triangles CoeurCommunaute
+	-$(RM) $(C++_DEPS)$(OBJS)$(OBJS_T)$(OBJS_O)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) CoeurCommunaute-Old  CoeurCommunaute
 	-@echo ' '
 
 .PHONY: all clean dependents
