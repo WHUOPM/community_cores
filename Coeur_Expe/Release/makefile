@@ -38,7 +38,8 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: CoeurCommunaute CoeurCommunaute-Old 
+all: CoeurCommunaute 
+#CoeurCommunaute-Old 
 #Triangles 
 
 # Tool invocations
@@ -49,12 +50,12 @@ CoeurCommunaute: $(OBJS) $(USER_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-CoeurCommunaute-Old: $(OBJS_O) $(USER_OBJS)
-	@echo 'Building target: $@'
-	@echo 'Invoking: Cross G++ Linker'
-	g++  -o "CoeurCommunaute-Old" $(OBJS_O) $(USER_OBJS) $(LIBS)
-	@echo 'Finished building target: $@'
-	@echo ' '
+#CoeurCommunaute-Old: $(OBJS_O) $(USER_OBJS)
+#	@echo 'Building target: $@'
+#	@echo 'Invoking: Cross G++ Linker'
+#	g++  -o "CoeurCommunaute-Old" $(OBJS_O) $(USER_OBJS) $(LIBS)
+#	@echo 'Finished building target: $@'
+#	@echo ' '
 
 #Triangles: $(OBJS_T) $(USER_OBJS)
 #	@echo 'Building target: $@'

@@ -2,8 +2,8 @@
 
 ## Presentation
 
-This C++ package is based on the [Louvain algorithm] (https://sites.google.com/site/findcommunities/) (**[2]**) dedicated to detect communities on graphs.
-Its aim is to detect the community cores of the graph. These cores are obtained by running the Louvain algorithm many times and detecting consensus (**[1]**).
+This C++ package is based on the [Louvain algorithm] (https://sites.google.com/site/findcommunities/) (**[2]**) which aims to detect graphs communities.
+The specific aim of this package is to detect the community cores of the graph. These cores are obtained by running the Louvain algorithm many times and detecting consensus (**[1,3]** for detailed information).
 
 ## Compilation
 
@@ -55,3 +55,4 @@ In **RUN/nomDossier/alpha/**, the cooccurences graphs are stored.
 ## References
 * **[1]** SEIFI, Massoud. Cœurs stables de communautés dans les graphes de terrain. 2012. Thèse de doctorat.
 * **[2]** BLONDEL, Vincent D., GUILLAUME, Jean-Loup, LAMBIOTTE, Renaud, et al. Fast unfolding of communities in large networks. Journal of Statistical Mechanics: Theory and Experiment, 2008, vol. 2008, no 10, p. P10008.
+* **[3]** SEIFI, Massoud, JUNIER, Ivan, ROUQUIER, Jean-Baptiste, et al. Stable community cores in complex networks. In : Complex Networks. Springer Berlin Heidelberg, 2013. p. 87-98.
