@@ -14,30 +14,30 @@ Run make in a shell in the **Release** folder.
 ### Step 1 : Running Louvain executions to obtain cooccurences graphs
 Running the Louvain algorithms **NbLouvain** times on the graph at the path **GraphFile**. The algorithm stores the results in **RUN/Expriment**. Cooccurences of nodes in communities detected by distinct Louvain runs are stored. **alpha** is the minimum number of cooccurences per total run (from 1 to 9). 
 
-**>**python simple-run.py -h
+	**>**python simple-run.py -h
 
-usage: simple-run.py [-h] [-a {1,2,3,4,5,6,7,8,9}] [-r] [-s SEPARATOR]
-                     GraphFile NbLouvain Experiment
+	usage: simple-run.py [-h] [-a {1,2,3,4,5,6,7,8,9}] [-r] [-s SEPARATOR]
+		             GraphFile NbLouvain Experiment
 
-Run the louvain algorithm executions
+	Run the louvain algorithm executions
 
-positional arguments:
-  **GraphFile**             The graph file to use
-  **NbLouvain**             The number of Louvain executions to run
-  **Experiment**            The experiment name. A folder will be created in RUN/
-                        according to this name
+	positional arguments:
+	  **GraphFile**             The graph file to use
+	  **NbLouvain**             The number of Louvain executions to run
+	  **Experiment**            The experiment name. A folder will be created in RUN/
+		                according to this name
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -a {1,2,3,4,5,6,7,8,9}, --**alpha** {1,2,3,4,5,6,7,8,9}
-                        The alpha minimum, namely the percentage of minimum
-                        cooccurence in communities between two nodes to keep
-                        them linked
-  -r, --**renum**          Mandatory if the graph labels do not start from 0
-  -s SEPARATOR, --**separator** SEPARATOR
-                        Default separator is tab.
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  -a {1,2,3,4,5,6,7,8,9}, --**alpha** {1,2,3,4,5,6,7,8,9}
+		                The alpha minimum, namely the percentage of minimum
+		                cooccurence in communities between two nodes to keep
+		                them linked
+	  -r, --**renum**          Mandatory if the graph labels do not start from 0
+	  -s SEPARATOR, --**separator** SEPARATOR
+		                Default separator is tab.
 
-**Exemple :** **>**python simple-run.py exemple/graph graph_exemple 20 2
+	**Exemple :** **>**python simple-run.py exemple/graph graph_exemple 20 2
 
 ### Step 2 : Creating cores using cooccurence graphs of step 1
 Using the cooccurences created at the previous step, the algorithm produces cores.
