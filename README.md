@@ -7,23 +7,23 @@ Its aim is to detect the community cores of the graph. These cores are obtained 
 
 ## Compilation
 
-Run make in a shell
+Run make in a shell in the **Release** folder.
 
 ## Usage
 
 ### Step 1 : Running Louvain executions to obtain cooccurences graphs
 Running the Louvain algorithms **nbLouvain** times on the graph at the path **graph**. The algorithm stores the results in **RUN/nomDossier**. Cooccurences of nodes in communities detected by distinct Louvain runs are stored. **alpha_entier** is the minimum number of cooccurences per total run (from 1 to 9). The parameter **graph_renum** is optionnal, if it does not exist, **graph** is automatically renumbered and **relabel2** is created. 
 
-python simple-run.py graph [graph_renum] [separator] nomDossier nbLouvain alpha_entier
+**>**python simple-run.py graph [graph_renum] [separator] nomDossier nbLouvain alpha_entier
 
-**Exemple :** python simple-run.py exemple/graph graph_exemple 20 2
+**Exemple :** **>**python simple-run.py exemple/graph graph_exemple 20 2
 
 ### Step 2 : Creating cores using cooccurence graphs of step 1
 Using the cooccurences created at the previous step, the algorithm produces cores.
 
-python simple-coeur.py graphe nomDossier
+**>**python simple-coeur.py graphe nomDossier
 
-**Exemple :** python simple-coeur.py exemple/graph graph_exemple
+**Exemple :** **>**python simple-coeur.py exemple/graph graph_exemple
 
 ## Results
 
