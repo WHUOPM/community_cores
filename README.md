@@ -37,12 +37,12 @@ Running the Louvain algorithms **NbLouvain** times on the graph at the path **Gr
 	  -s SEPARATOR, --**separator** SEPARATOR
 		                Default separator is tab.
 
-	**Exemple :** **>**python simple-run.py exemple/graph graph_exemple 20 2
+**Exemple :** **>**python simple-run.py exemple/graph graph_exemple 20 2
 
 ### Step 2 : Creating cores using cooccurence graphs of step 1
 Using the cooccurences created at the previous step, the algorithm produces cores.
 
-**>**python simple-coeur.py graphe nomDossier
+	**>**python simple-coeur.py graphe nomDossier
 
 **Exemple :** **>**python simple-coeur.py exemple/graph graph_exemple
 
@@ -51,8 +51,6 @@ Using the cooccurences created at the previous step, the algorithm produces core
 In **RUN/nomDossier/alpha/coeurs**, the cores are stored. Each file is identified by an id and represents a core, namely a connected component in the cooccurence graph corresponding to **alpha**.
 
 In **RUN/nomDossier/alpha/**, the cooccurences graphs are stored.
-
-The relabelling file **relabel2** contains matching between the initial labels of the graph file and the new labels after renumbering.
 
 ## References
 * **[1]** SEIFI, Massoud. Cœurs stables de communautés dans les graphes de terrain. 2012. Thèse de doctorat.
