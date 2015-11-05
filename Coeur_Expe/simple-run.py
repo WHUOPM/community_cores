@@ -22,15 +22,17 @@ renum=args.renum
 weighted=False
 
 listAlpha=list(range(int(alpha_min),10))
-os.system("mkdir RUN/" + dossier);
-os.system("mkdir RUN/" + dossier + "/Louvain")
+if not os.path.exists ("RUN/" + dossier):
+	os.system("mkdir RUN/" + dossier);
+	os.system("mkdir RUN/" + dossier + "/Louvain")
 
 #os.system("mkdir RUN/" + dossier + "-OLD");
 #os.system("mkdir RUN/" + dossier + "-OLD/Louvain")
 
 for alpha in listAlpha:
-        os.system("mkdir RUN/" + dossier + "/" + str(alpha))
-        os.system("mkdir RUN/" + dossier + "/" + str(alpha) + "/coeurs")
+	if not os.path.exists ("RUN/" + dossier + "/" + str(alpha)):
+		os.system("mkdir RUN/" + dossier + "/" + str(alpha))
+		os.system("mkdir RUN/" + dossier + "/" + str(alpha) + "/coeurs")
 
 	#os.system("mkdir RUN/" + dossier + "-OLD/" + str(alpha))
 	#os.system("mkdir RUN/" + dossier + "-OLD/" + str(alpha) + "/coeurs")

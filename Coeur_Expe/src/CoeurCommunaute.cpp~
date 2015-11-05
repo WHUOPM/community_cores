@@ -45,6 +45,8 @@ int main(int argc, char* argv[]) {
 
 		string graphName = graphPath.substr(graphPath.find_last_of("/")+1, graphPath.length());
 
+		cout << "Graph : " << graphName << endl;
+
 		if(graphName.length() == 0) {
 
 			graphName = graphPath;
@@ -55,21 +57,24 @@ int main(int argc, char* argv[]) {
 		unsigned int seuil_min = atoi(argv[4]);
 				
 		bool weighted=false;
-		cout << "argc : " << argc << endl;
-		cout << "argv 5  : " << argv[5] << endl;
-		cout << "argv 6  : " << argv[6] << endl;
 		string w = "weighted";
-		if ((argc >= 5) && (w.compare(argv[5])==0))
-			weighted=true;
+		if (argc > 5) {
+			cout << "Weighted" << endl;
+			if (w.compare(argv[5])==0) {
+				weighted=true;
+			}
+		}
 
 		double seuil = nbLouvain * (seuil_min / (10.0));
+
+		cout << "Seuil : " << seuil << endl;
 
 		Digraph l = Digraph();
 		l.loadEdgeList(graphPath, false);
 
 		unsigned int nbSommets = l.getDim();
 
-		cout << nbSommets << endl;
+		cout << nbSommets << " sommets."<< endl;
 
 		vector < unordered_map<unsigned long int,unsigned int> > cooccur(nbSommets);
 		vector< vector<unsigned long int> > comm;
@@ -85,7 +90,7 @@ int main(int argc, char* argv[]) {
 		}
 
 		for ( int k = 1; k <= nbLouvain; k++ ) {
-
+			cout << "Louvain run " << k << endl;
 			stringstream fileName;
 			fileName << "RUN/" << argv[3] << "" << "/Louvain/graph" << k;
 
@@ -93,9 +98,11 @@ int main(int argc, char* argv[]) {
 
 			// TODO : un .tree par itération du Louvain ?
 			if (weighted) {
+				cout << "Modularity : " << endl;
 				system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin -w " + path + "RUN/" + argv[3] + "/Louvain/graph.weights > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());
 			}
 			else {
+				cout << "Modularity : " << endl;
 				system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());
 			}
 			//system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());
@@ -107,9 +114,9 @@ int main(int argc, char* argv[]) {
 			int scanfReturn;
 
 			// On charge les communautés dans un vecteur
-			cout << "reading graph from : " << (path + fileName.str()).c_str() << endl;
+			//cout << "reading graph from : " << (path + fileName.str()).c_str() << endl;
 
-			cout << "updating map..." << endl;
+			//cout << "updating map..." << endl;
 
 			unordered_map<unsigned long int,unsigned int>::iterator it;
 
@@ -280,15 +287,15 @@ int main(int argc, char* argv[]) {
 
 		inFile.close();
 
-		cout << "Writing WeightedEdges/unweightedEdges done" << endl;
+		//cout << "Writing WeightedEdges/unweightedEdges done" << endl;
 
 		for ( unsigned int i = 5; i < 10; i++ ) {
 
 			Digraph d = Digraph();
 			d.loadEdgeList(path + "RUN/" + argv[3] + "" + "/" + to_string(i) + "/CooccurOLD_" + graphName, false);
-			cout << "graph loaded" << endl;
+			//cout << "graph loaded" << endl;
 
-			cout << "relabeling..." << endl;
+			//cout << "relabeling..." << endl;
 
 			ofstream relabelFile2(path + "relabel2", ios::out);
 			vector<long int> relab2 = d.relabel();
@@ -304,8 +311,8 @@ int main(int argc, char* argv[]) {
 			}
 
 			relabelFile2.close();
-			cout << "done." << endl;
-			cout << "creating relabeled communities" << endl;
+			//cout << "done." << endl;
+			//cout << "creating relabeled communities" << endl;
 
 			ofstream unweightedRelabeledGraph(path + "RUN/" + argv[3] + "" + "/" + to_string(i) + "/CooccurOLD_" + graphName +"_relabeled", ios::out);
 			ifstream inFile(path + "CooccurOLD_"+graphName);
@@ -324,7 +331,7 @@ int main(int argc, char* argv[]) {
 			inFile.close();
 			unweightedRelabeledGraph.close();
 
-			cout << "done" << endl;
+			//cout << "done" << endl;
 
 			// Correspondance inverse entre CooccurOLDrence alpha et CooccurOLDrence classique
 			/*vector<long int> labelBase = vector<long int>(d.getDim(), -1);
