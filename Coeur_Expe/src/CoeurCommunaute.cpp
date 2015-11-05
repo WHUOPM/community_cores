@@ -55,7 +55,8 @@ int main(int argc, char* argv[]) {
 		unsigned int seuil_min = atoi(argv[4]);
 				
 		bool weighted=false;
-		if ((argc >= 5) && (argv[5]== "weighted"))
+		string w = "weighted";
+		if ((argc >= 5) && (w.compare(argv[5])==0))
 			weighted=true;
 
 		double seuil = nbLouvain * (seuil_min / (10.0));
@@ -71,13 +72,13 @@ int main(int argc, char* argv[]) {
 		vector< vector<unsigned long int> > comm;
 
 		// Conversion et generation des communautes une fois par type de triangle
-		cout << "Converting" << endl;
+		cout << "Converting " << weighted << endl;
 		
 		if (weighted) {
-			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin").c_str());
+			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin -w " + path + "RUN/" + argv[3] + "/Louvain/graph.weights").c_str());
 		}
 		else {
-			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin -w /Louvain/graph.weights").c_str());
+			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin").c_str());
 		}
 
 		for ( int k = 1; k <= nbLouvain; k++ ) {
@@ -89,7 +90,7 @@ int main(int argc, char* argv[]) {
 
 			// TODO : un .tree par itération du Louvain ?
 			if (weighted) {
-				system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin -w /Louvain/graph.weights > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());
+				system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin -w " + path + "RUN/" + argv[3] + "/Louvain/graph.weights > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());
 			}
 			else {
 				system(("./" + path + "dependencies/louvain/community -l -1 "+path+"RUN/" + argv[3] + "" + "/Louvain/graph.bin > " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.tree").c_str());

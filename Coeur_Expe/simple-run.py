@@ -19,7 +19,7 @@ alpha_min=args.alpha
 separator=args.separator
 renum=args.renum
 
-weigthed=False
+weighted=False
 
 listAlpha=list(range(int(alpha_min),10))
 os.system("mkdir RUN/" + dossier);
@@ -46,6 +46,7 @@ if renum:
 	dico=dict()
 	for ligne in f:
 		w=""
+		print ligne
 		try:
         		src,dst = ligne.split(separator)
 		except:
@@ -64,6 +65,15 @@ if renum:
 	f_renum.close()
         f.close()
 	graph=graph_renum
+else:
+	f = open(graph,'r')
+	for ligne in f:
+		try:
+        		src,dst = ligne.split(separator)
+		except:
+			src,dst,w = ligne.split(separator)
+			weighted=True
+		break
 if weighted:
 	os.system("./Release/CoeurCommunaute " + graph + " " + str(nbLouvain) + " " + dossier + " " + str(alpha_min)+ " weighted")
 else:
