@@ -5,6 +5,8 @@
 This C++ package is based on the [Louvain algorithm] (https://sites.google.com/site/findcommunities/) (**[2]**) which aims to detect graphs communities.
 The specific aim of this package is to detect the community cores of the graph. These cores are obtained by running the Louvain algorithm many times and detecting consensus (**[1,3]** for detailed information).
 
+This package was originally developped by Tennessy Kolubako and then updated by Anthony Perez and Nicolas Dugué.
+
 ## Compilation
 
 Run make in a shell in the **Release** folder.
