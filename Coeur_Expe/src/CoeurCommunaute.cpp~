@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
 				
 		bool weighted=false;
 		string w = "weighted";
-		if (argc > 5) {
+		if (argc >= 5) {
 			cout << "Weighted" << endl;
 			if (w.compare(argv[5])==0) {
 				weighted=true;
@@ -69,18 +69,18 @@ int main(int argc, char* argv[]) {
 
 		cout << "Seuil : " << seuil << endl;
 
-		Digraph l = Digraph();
-		l.loadEdgeList(graphPath, false);
+		//Digraph l = Digraph();
+		//l.loadEdgeList(graphPath, false);
 
-		unsigned int nbSommets = l.getDim();
+		//unsigned int nbSommets = l.getDim();
 
-		cout << nbSommets << " sommets."<< endl;
+		//cout << nbSommets << " sommets."<< endl;
 
-		vector < unordered_map<unsigned long int,unsigned int> > cooccur(nbSommets);
+		vector < unordered_map<unsigned long int,unsigned int> > cooccur;
 		vector< vector<unsigned long int> > comm;
 
 		// Conversion et generation des communautes une fois par type de triangle
-		cout << "Converting " << weighted << endl;
+		cout << "Converting to binary " << endl;
 		
 		if (weighted) {
 			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin -w " + path + "RUN/" + argv[3] + "/Louvain/graph.weights").c_str());
@@ -89,6 +89,7 @@ int main(int argc, char* argv[]) {
 			system(("./" + path + "dependencies/louvain/convert -i " + graphPath + " -o " + path + "RUN/" + argv[3] + "" + "/Louvain/graph.bin").c_str());
 		}
 
+		unsigned int nbSommets;
 		for ( int k = 1; k <= nbLouvain; k++ ) {
 			cout << "Louvain run " << k << endl;
 			stringstream fileName;
@@ -119,6 +120,7 @@ int main(int argc, char* argv[]) {
 			//cout << "updating map..." << endl;
 
 			unordered_map<unsigned long int,unsigned int>::iterator it;
+			nbSommets=0;
 
 			while ( (scanfReturn = fscanf(file,"%ld %ld", &source, &target)) != EOF ) {
 
@@ -132,6 +134,7 @@ int main(int argc, char* argv[]) {
 
 					comm[target].push_back(source);
 				}
+				nbSommets+=1;
 
 			}
 

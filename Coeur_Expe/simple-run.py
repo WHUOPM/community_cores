@@ -15,7 +15,7 @@ args = parser.parse_args()
 graph=args.GraphFile[0]
 dossier=args.Experiment[0]
 nbLouvain=args.NbLouvain[0]
-alpha_min=args.alpha
+alpha_min=args.alpha[0]
 separator=args.separator
 renum=args.renum
 
@@ -77,6 +77,7 @@ else:
 			weighted=True
 		break
 if weighted:
+	print "./Release/CoeurCommunaute " + graph + " " + str(nbLouvain) + " " + dossier + " " + str(alpha_min)+ " weighted"
 	os.system("./Release/CoeurCommunaute " + graph + " " + str(nbLouvain) + " " + dossier + " " + str(alpha_min)+ " weighted")
 else:
 	os.system("./Release/CoeurCommunaute " + graph + " " + str(nbLouvain) + " " + dossier + " " + str(alpha_min))
