@@ -1,5 +1,9 @@
 # Community cores
 
+##Location
+
+[https://github.com/nicolasdugue/community_cores](https://github.com/nicolasdugue/community_cores)
+
 ## Presentation
 
 This C++ package is based on the [Louvain algorithm] (https://sites.google.com/site/findcommunities/) (**[2]**) which aims to detect graphs communities.
