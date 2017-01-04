@@ -58,13 +58,12 @@ int main(int argc, char* argv[]) {
 				
 		bool weighted=false;
 		string w = "weighted";
-		if (argc >= 5) {
+		if (argc >= 6) {
 			if (w.compare(argv[5])==0) {
 				cout << "Weighted" << endl;
 				weighted=true;
 			}
 		}
-
 		double seuil = nbLouvain * (seuil_min / (10.0));
 
 		cout << "Seuil : " << seuil << endl;
