@@ -59,8 +59,8 @@ int main(int argc, char* argv[]) {
 		bool weighted=false;
 		string w = "weighted";
 		if (argc >= 5) {
-			cout << "Weighted" << endl;
 			if (w.compare(argv[5])==0) {
+				cout << "Weighted" << endl;
 				weighted=true;
 			}
 		}
