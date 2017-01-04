@@ -77,7 +77,6 @@ else:
         		src,dst = ligne.split(separator)
 		except:
 			src,dst,w = ligne.split(separator)
-			print src, "-", dst, "-", w
 			weighted=True
 		break
 if weighted:
