@@ -48,6 +48,7 @@ if renum:
 	else:
 		graph_renum=graph+"_renum"
         f_renum = open(graph_renum,'w')
+	f_label=open(graph+"_labels","w")
 	dico=dict()
 	for ligne in f:
 		w=""
@@ -69,6 +70,9 @@ if renum:
                	f_renum.write("\n")
 	f_renum.close()
         f.close()
+	for src in dico:
+		f_label.write(str(src)+"\t"+str(dico[src])+"\n")
+	f_label.close()
 	graph=graph_renum
 else:
 	f = open(graph,'r')
