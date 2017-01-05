@@ -44,7 +44,7 @@ for alpha in listAlpha:
 if renum:
 	f = open(graph,'r')
 	if "." in graph:
-		graph_renum=graph[0:graph.index(".")]+"_renum"+graph[graph.index("."):]
+		graph_renum=graph[0:graph.rindex(".")]+"_renum"+graph[graph.rindex("."):]
 	else:
 		graph_renum=graph+"_renum"
         f_renum = open(graph_renum,'w')
