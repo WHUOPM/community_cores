@@ -55,6 +55,17 @@ int main(int argc, char* argv[]) {
 
 		unsigned int nbLouvain = atoi(argv[2]);
 		unsigned int seuil_min = atoi(argv[4]);
+
+		//Vectors of alpha to construct
+		vector<unsigned int> alphas;
+		for (unsigned int i= seuil_min; i < 10; i ++) {
+			alphas.push_back(i);
+		}
+		for (unsigned int i= 92; i < 99; i+=2) {
+			alphas.push_back(i);
+		} 
+
+
 				
 		bool weighted=false;
 		string w = "weighted";
@@ -219,81 +230,58 @@ int main(int argc, char* argv[]) {
 		cout << "computing alpha files" << endl;
 		ifstream inFile(path + "CooccurOLD_"+graphName);
 
-		/*ofstream file1(path + "RUN/" + argv[3] + "" + "/1/CooccurOLD_" + graphName);
-		ofstream file2(path + "RUN/" + argv[3] + "" + "/2/CooccurOLD_" + graphName);
-		ofstream file3(path + "RUN/" + argv[3] + "" + "/3/CooccurOLD_" + graphName);
-		ofstream file4(path + "RUN/" + argv[3] + "" + "/4/CooccurOLD_" + graphName);*/
-		ofstream file5(path + "RUN/" + argv[3] + "" + "/5/CooccurOLD_" + graphName);
-		ofstream file6(path + "RUN/" + argv[3] + "" + "/6/CooccurOLD_" + graphName);
-		ofstream file7(path + "RUN/" + argv[3] + "" + "/7/CooccurOLD_" + graphName);
-		ofstream file8(path + "RUN/" + argv[3] + "" + "/8/CooccurOLD_" + graphName);
-		ofstream file9(path + "RUN/" + argv[3] + "" + "/9/CooccurOLD_" + graphName);
-
-		while ( inFile >> source >> target >> nbOccur ) {
-			/*if( (double) (((double)nbOccur) / nbLouvain >= (0.1)) ) {
-
-				file1 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.2)) ) {
-
-				file2 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.3)) ) {
-
-				file3 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.4)) ) {
-
-				file4 << source << " " << target << endl;
-
-			}*/
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.5)) ) {
-
-				file5 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.6)) ) {
-
-				file6 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.7)) ) {
-
-				file7 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.8)) ) {
-
-				file8 << source << " " << target << endl;
-
-			}
-			if( (double) (((double)nbOccur) / nbLouvain >= (0.9))) {
-
-				file9 << source << " " << target << endl;
-
-			}
-
+		vector<ofstream> files;
+		unsigned int tmp_alpha;
+		stringstream ss;
+		string str;
+		for(std::vector<unsigned int>::iterator i=alphas.begin();i!=alphas.end();i++) {
+			ofstream out;
+			tmp_alpha=*i;
+			str = to_string(tmp_alpha);
+			out.open(path + "RUN/" + argv[3] + "/"+ str +"/CooccurOLD_" + graphName);
+			files.push_back(std::move(out));
 		}
 
-		/*file1.close();
-		file2.close();
-		file3.close();
-		file4.close();*/
-		file5.close();
-		file6.close();
-		file7.close();
-		file8.close();
-		file9.close();
+		unsigned cpt=0;
+		while ( inFile >> source >> target >> nbOccur ) {
+
+			cpt=0;
+			for(std::vector<unsigned int>::iterator i=alphas.begin();i!=alphas.end();i++) {
+				tmp_alpha=*i;
+				
+				if (tmp_alpha < 10) {
+					seuil = tmp_alpha/ 10.0;	
+				}
+				else {
+					seuil = tmp_alpha/ 100.0;
+				}
+				
+				if( (double) (((double)nbOccur) / nbLouvain >= (seuil)) ) {
+					files[cpt] << source << " " << target << endl;
+
+				}
+				else {
+					break;
+				}
+				cpt++;
+				
+			}
+			
+		}
+		cout << "Alpha files written" << endl;
+
+		for(unsigned int i = 0;i < files.size();i++) {
+			files[i].close();
+		}
+		cout << "Files closed" << endl;
 
 		inFile.close();
+		
 
 		//cout << "Writing WeightedEdges/unweightedEdges done" << endl;
-
-		for ( unsigned int i = 5; i < 10; i++ ) {
-
+		unsigned int i;
+		for (std::vector<unsigned int>::iterator j=alphas.begin();j!=alphas.end();j++) {
+			i=*j;
 			Digraph d = Digraph();
 			d.loadEdgeList(path + "RUN/" + argv[3] + "" + "/" + to_string(i) + "/CooccurOLD_" + graphName, false);
 			//cout << "graph loaded" << endl;
