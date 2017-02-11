@@ -64,6 +64,7 @@ int main(int argc, char* argv[]) {
 		for (unsigned int i= 92; i < 99; i+=2) {
 			alphas.push_back(i);
 		} 
+		alphas.push_back(99);
 
 
 				

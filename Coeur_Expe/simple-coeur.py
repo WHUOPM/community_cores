@@ -10,9 +10,16 @@ else:
 	graph=sys.argv[1].split("/")[len(sys.argv[1].split("/")) - 1]
 	dossier=sys.argv[2]
 	
-	listAlpha=[1,2,3,4,5,6,7,8,9]	
+	listAlpha=os.listdir('RUN/'+dossier)
+	listAlpha.sort()
+	try:
+		listAlpha.remove("Louvain")
+		listAlpha.remove("maxcore")
+	except:
+		pass
 
 	for alpha in listAlpha:
+		print alpha
 		if(os.path.isfile("RUN/" + dossier + "/"  + str(alpha) + "/Communities_" + graph)):
 			if(os.system("rm RUN/"+dossier+"/"+str(alpha)+"/coeurs/*")):
 				f = open("RUN/" + dossier + "/"  + str(alpha) + "/Communities_" + graph,'r')

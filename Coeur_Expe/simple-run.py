@@ -26,6 +26,7 @@ if not os.path.exists ("RUN/"):
 
 listAlpha=list(range(int(alpha_min),10))
 listAlpha += (list(range(92, 99, 2)))
+listAlpha.append(99)
 if not os.path.exists ("RUN/" + dossier):
 	os.system("mkdir RUN/" + dossier);
 	os.system("mkdir RUN/" + dossier + "/Louvain")

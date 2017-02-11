@@ -32,7 +32,7 @@ try:
 	listAlpha.remove("Louvain")
 	listAlpha.remove("maxcore")
 except:
-	print ""
+	pass
 for alpha in listAlpha:
 	listCoeur=os.listdir('RUN/'+dossier+"/"+alpha+"/coeurs/")
 	for coeur in listCoeur:
@@ -41,7 +41,7 @@ for alpha in listAlpha:
 			try:
 				nodes[int(ligne.strip())]=alpha
 			except:
-				print ligne
+				pass
 resultat=open("RUN/"+dossier+"/maxcore", "w")
 for node in nodes:
 	resultat.write(str(node)+" "+str(nodes[node])+"\n")
